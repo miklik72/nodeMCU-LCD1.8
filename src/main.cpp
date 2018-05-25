@@ -91,7 +91,7 @@ void ProgressBar::drawStep() {
   //tft.println(_w);
   //tft.println(_h);
   //tft.println(_steps);
-  //tft.fillRect(_x, _y, _w, _h, ST7735_BLUE);
+  tft.fillRect(_x, _y, _w, _h, ST7735_BLUE);
 }
 
 ProgressBar bar1(0,10,100,5,150);
