@@ -19,20 +19,6 @@
 // an output. This is much faster - also required if you want
 // to use the microSD card (see the image drawing example)
 
-// For 1.44" and 1.8" TFT with ST7735 use
-Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
-bool invert = false;
-// For 1.54" TFT with ST7789
-//Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS,  TFT_DC, TFT_RST);
-
-// Option 2: use any pins but a little slower!
-//#define TFT_SCLK 13   // set these to be whatever pins you like!
-//#define TFT_MOSI 11   // set these to be whatever pins you like!
-//Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
-
-DHT dht;
-unsigned long tdelay = millis();
-
 class ProgressBar {
       uint16_t _x;
       uint16_t _y;
@@ -42,37 +28,20 @@ class ProgressBar {
       uint16_t _w;
       uint16_t _color;
       bool _horizontal;
+      Adafruit_ST7735* _ptr_lcd;
     public:
       void setColor(uint16_t color);
       void setSteps(uint16_t steps); //default 100
       uint16_t getStep();
       void drawStep();
       void reset();
-      ProgressBar();  //x = 0, y = 0, steps = 100, h = 1, w = end of LCD, color = white, horizontal true
-      ProgressBar(uint16_t, uint16_t);
-      ProgressBar(uint16_t, uint16_t, uint16_t);
-      ProgressBar(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t);
-      ProgressBar(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t);
-      ProgressBar(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, bool);
+      ProgressBar(Adafruit_ST7735 *ptr_lcd, uint16_t x = 0, uint16_t y = 0, uint16_t steps = 100, uint16_t h = 5 , uint16_t w = 100, uint16_t = 0, bool horizontal = true);
 };
 
-//x = 0, y = 0, steps = 100, h = 1, w = 100, color = white, horizontal true
-ProgressBar::ProgressBar() : ProgressBar(0, 0, 100, 1, 100, 0 - 1,true) {}
-
-ProgressBar::ProgressBar(uint16_t x, uint16_t y) : ProgressBar(x, y, 100, 1, 100, 0 - 1,true) {}
-
-ProgressBar::ProgressBar(uint16_t x, uint16_t y, uint16_t steps) :
-  ProgressBar(x, y, steps, 1, 100, 0 - 1,true) {}
-
-ProgressBar::ProgressBar(uint16_t x, uint16_t y, uint16_t steps, uint16_t h, uint16_t w) :
-  ProgressBar(x, y, steps, h, w, 0 - 1,true) {}
-
-ProgressBar::ProgressBar(uint16_t x, uint16_t y, uint16_t steps, uint16_t h, uint16_t w, uint16_t color) :
-  ProgressBar(x, y, steps, h, w, color,true) {}
-
-ProgressBar::ProgressBar(uint16_t x, uint16_t y, uint16_t steps, uint16_t h, uint16_t w, uint16_t color, bool horizontal) {
+ProgressBar::ProgressBar(Adafruit_ST7735 *ptr_lcd, uint16_t x, uint16_t y, uint16_t steps, uint16_t h, uint16_t w, uint16_t color, bool horizontal) {
   _x = x; _y = y; _steps = steps; _h = h; _w = w; _color = color; _horizontal = horizontal;
   _current_step = 0;
+  _ptr_lcd = ptr_lcd;
 }
 
 void ProgressBar::setColor(uint16_t color) {
@@ -91,14 +60,16 @@ void ProgressBar::drawStep() {
   //tft.println(_w);
   //tft.println(_h);
   //tft.println(_steps);
-  tft.fillRect(_x, _y, _w, _h, ST7735_BLUE);
+  _ptr_lcd->fillRect(_x, _y, _w, _h, ST7735_BLUE);
 }
 
-ProgressBar bar1(0,10,100,5,150);
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
+bool invert = false;
 
+DHT dht;
+unsigned long tdelay = millis();
 
-
-
+ProgressBar bar1(&tft,0,10,100,5,150);
 
 void printSensor() {
   if(tdelay + DTHUPDATE < millis()) {
