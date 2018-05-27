@@ -20,6 +20,7 @@
 // to use the microSD card (see the image drawing example)
 
 class ProgressBar {
+      Adafruit_ST7735* _ptr_lcd;
       uint16_t _x;
       uint16_t _y;
       uint16_t _steps;
@@ -28,7 +29,6 @@ class ProgressBar {
       uint16_t _w;
       uint16_t _color;
       bool _horizontal;
-      Adafruit_ST7735* _ptr_lcd;
     public:
       void setColor(uint16_t color);
       void setSteps(uint16_t steps); //default 100
@@ -38,10 +38,12 @@ class ProgressBar {
       ProgressBar(Adafruit_ST7735 *ptr_lcd, uint16_t x = 0, uint16_t y = 0, uint16_t steps = 100, uint16_t h = 5 , uint16_t w = 100, uint16_t = 0, bool horizontal = true);
 };
 
-ProgressBar::ProgressBar(Adafruit_ST7735 *ptr_lcd, uint16_t x, uint16_t y, uint16_t steps, uint16_t h, uint16_t w, uint16_t color, bool horizontal) {
-  _x = x; _y = y; _steps = steps; _h = h; _w = w; _color = color; _horizontal = horizontal;
+ProgressBar::ProgressBar(Adafruit_ST7735 *ptr_lcd, uint16_t x, uint16_t y, uint16_t steps, uint16_t h, uint16_t w, uint16_t color, bool horizontal)
+  : _ptr_lcd{ptr_lcd}, _x{x}, _y{y}, _steps{steps}, _h{h}, _w{w}, _color{color}, _horizontal{horizontal}
+   {
+  //_x = x; _y = y; _steps = steps; _h = h; _w = w; _color = color; _horizontal = horizontal;
   _current_step = 0;
-  _ptr_lcd = ptr_lcd;
+  //_ptr_lcd = ptr_lcd;
 }
 
 void ProgressBar::setColor(uint16_t color) {
